@@ -117,10 +117,30 @@ class Profile(models.Model):
         blank=True,
         verbose_name='درباره من'
     )
-    # avatar = models.ImageField(
-    #     src
-    # )
-
+    avatar = models.ImageField(
+        upload_to='profiles/avatars/',
+        blank=True,
+        verbose_name='تصویر پروفایل'
+    )
+    province = models.CharField(
+        max_length=100,
+        blank=True,
+        verbose_name='استان'
+    )
+    city = models.CharField(
+        max_length=100,
+        blank=True,
+        verbose_name='شهر'
+    )
+    address = models.TextField(
+        blank=True,
+        verbose_name='آدرس کامل'
+    )
+    postal_code = models.CharField(
+        max_length=11,
+        blank=True,
+        verbose_name='کد پستی'
+    )
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='تاریخ ایجاد')
     updated_at = models.DateTimeField(auto_now=True, verbose_name='تاریخ بروزرسانی')
 

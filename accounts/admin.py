@@ -10,10 +10,22 @@ class ProfileInline(admin.StackedInline):
     extra = 0
     max_num = 1
     can_delete = False
-    readonly_fields = [
+    fields = (
+        'display_name',
+        'biography',
+        'avatar',
+        'province',
+        'city',
+        'address',
+        'postal_code',
         'created_at',
-        'updated_at'
-    ]
+        'updated_at',
+    )
+
+    readonly_fields = (
+        'created_at',
+        'updated_at',
+    )
 
 
 class CustomUserAdmin(UserAdmin):
@@ -105,33 +117,63 @@ class CustomUserAdmin(UserAdmin):
 
 @admin.register(Profile)
 class ProfileAdmin(admin.ModelAdmin):
-    readonly_fields = ['created_at', 'updated_at']
+    readonly_fields = (
+        'created_at',
+        'updated_at',
+    )
+
     fieldsets = (
         ('اطلاعات پروفایل', {
-            'fields': ('user',),
-            'classes': ('collapse',)
+            'fields': (
+                'user',
+                'display_name',
+                'biography',
+                'avatar',
+                'province',
+                'city',
+                'address',
+                'postal_code',
+            ),
         }),
         ('اطلاعات سیستم', {
             'fields': (
                 'created_at',
-                'updated_at'
+                'updated_at',
             ),
-            'classes': ('collapse',)
-        })
+            'classes': ('collapse',),
+        }),
     )
 
-    list_display = ['id', 'user', 'created_at', 'updated_at']
-    search_fields = [
+    list_display = (
+        'id',
+        'user',
+        'display_name',
+        'province',
+        'city',
+        'postal_code',
+        'created_at',
+        'updated_at',
+    )
+
+    search_fields = (
         'user__id',
         'user__phone_number',
         'user__email',
-        'user__last_name'
-    ]
+        'user__first_name',
+        'user__last_name',
+        'display_name',
+        'province',
+        'city',
+        'postal_code',
+    )
+    list_filter = (
+        'province',
+        'city',
+    )
 
-    ordering = [
+    ordering = (
         '-created_at',
-        'updated_at'
-    ]
+    )
 
     def has_add_permission(self, request):
         return False
