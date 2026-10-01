@@ -74,19 +74,35 @@ class Product(models.Model):
         verbose_name='قیمت عمده فروشی'
     )
 
+    retail_available = models.BooleanField(
+        default=True,
+        verbose_name='فروش خرده مجاز'
+    )
+
+    retail_min_quantity = models.PositiveIntegerField(
+        default=1,
+        verbose_name='حداقل تعداد خرید خرده'
+    )
+
+    retail_max_quantity = models.PositiveIntegerField(
+        default=6,
+        verbose_name='حداکثر تعداد خرید خرده'
+    )
+
     wholesale_min_quantity = models.PositiveIntegerField(
         default=7,
         verbose_name='حداقل تعداد خرید عمده'
     )
 
-    wholesale_package_size = models.PositiveIntegerField(
-        default=10,
-        verbose_name='تعداد در بسته عمده'
+    wholesale_max_quantity = models.PositiveIntegerField(
+        null=True,
+        blank=True,
+        verbose_name='حداکثر تعداد خرید عمده'
     )
 
-    retail_available = models.BooleanField(
-        default=True,
-        verbose_name='فروش خرده مجاز'
+    wholesale_package_size = models.PositiveIntegerField(
+        default=10,
+        verbose_name='اندازه بسته عمده'
     )
 
     stock_quantity = models.PositiveIntegerField(
