@@ -113,6 +113,18 @@ class CustomUserAdmin(UserAdmin):
         'date_joined',
         'last_login',
     )
+    list_display_links = [
+        'phone_number'
+    ]
+
+    def get_deleted_objects(
+            self, objs, request):
+        deleted_objects, model_count, perms_needed, protected = (
+            super().get_deleted_objects(objs, request)
+        )
+        perms_needed.discard(Profile._meta.verbose_name)
+
+        return deleted_objects, model_count, perms_needed, protected
 
 
 @admin.register(Profile)
@@ -174,6 +186,10 @@ class ProfileAdmin(admin.ModelAdmin):
     ordering = (
         '-created_at',
     )
+    list_display_links = [
+        'id',
+        'user',
+    ]
 
     def has_add_permission(self, request):
         return False
