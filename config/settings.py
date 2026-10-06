@@ -39,7 +39,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    # Internal
+
+    # Third-party — پکیج‌های خارجی
+    'rest_framework',               # Django REST Framework: تبدیل جنگو به API ساز
+    'rest_framework_simplejwt',     # JWT: سیستم توکن برای احراز هویت
+
+    # Internal — اپ‌های خودمون
     'accounts.apps.AccountsConfig',
     'catalog.apps.CatalogConfig',
 ]
@@ -118,6 +123,7 @@ USE_TZ = True
 STATIC_URL = 'static/'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
+
 # Email
 # https://docs.djangoproject.com/en/6.1/topics/email/#topic-email-configuration
 
@@ -126,3 +132,72 @@ MAILERS = {
         'BACKEND': 'django.core.mail.backends.console.EmailBackend',
     },
 }
+
+# ──────────────────────────────────────────────────────────────
+# Django REST Framework تنظیمات
+# ──────────────────────────────────────────────────────────────
+# این بخش به DRF میگه:
+# ۱) DEFAULT_AUTHENTICATION_CLASSES: چطور بفهمه کاربر کیه؟
+#    - JWTAuthentication: توکن JWT رو از هدر Authorization میخونه
+#    - SessionAuthentication: کوکی session رو چک میکنه (برای admin و browsable API)
+# ۲) DEFAULT_PERMISSION_CLASSES: چه کسی اجازه دسترسی داره؟
+#    - AllowAny: همه میتونن (بعداً توی هر ویو جداگانه محدود میکنیم)
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.AllowAny',
+    ),
+}
+
+# ──────────────────────────────────────────────────────────────
+# Simple JWT تنظیمات
+# ──────────────────────────────────────────────────────────────
+# ACCESS_TOKEN_LIFETIME: عمر توکن دسترسی (۳۰ دقیقه)
+#   → هر ۳۰ دقیقه کاربر باید توکن جدید بگیره
+# REFRESH_TOKEN_LIFETIME: عمر توکن رفرش (۷ روز)
+#   → با این توکن میشه access token جدید گرفت بدون لاگین دوباره
+# ROTATE_REFRESH_TOKENS: هر بار رفرش، توکن رفرش جدید هم بده
+# BLACKLIST_AFTER_ROTATION: توکن رفرش قبلی رو باطل کن (امنیت بالاتر)
+
+from datetime import timedelta
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
+    'ROTATE_REFRESH_TOKENS': True,
+    'BLACKLIST_AFTER_ROTATION': False,
+    'AUTH_HEADER_TYPES': ('Bearer',),
+}
+
+# ──────────────────────────────────────────────────────────────
+# Cache تنظیمات — ذخیره‌سازی موقت (برای OTP)
+# ──────────────────────────────────────────────────────────────
+# LocMemCache: کش توی حافظه RAM سرور
+# → برای development عالیه
+# → وقتی Redis نصب کردی فقط BACKEND رو عوض میکنی:
+#   'django.core.cache.backends.redis.RedisCache'
+#   و LOCATION رو میذاری: 'redis://127.0.0.1:6379/1'
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'otp-cache',
+    }
+}
+
+# ──────────────────────────────────────────────────────────────
+# OTP تنظیمات — کد یکبار مصرف
+# ──────────────────────────────────────────────────────────────
+# OTP_EXPIRE_SECONDS: کد بعد از چند ثانیه منقضی بشه (۱۲۰ = ۲ دقیقه)
+# OTP_MAX_ATTEMPTS: حداکثر چند بار میتونه کد اشتباه بزنه
+# OTP_COOLDOWN_SECONDS: بین دو بار ارسال کد چند ثانیه صبر کنه
+# OTP_CODE_LENGTH: طول کد OTP (۵ رقم)
+
+OTP_EXPIRE_SECONDS = 120
+OTP_MAX_ATTEMPTS = 3
+OTP_COOLDOWN_SECONDS = 60
+OTP_CODE_LENGTH = 5
