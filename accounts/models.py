@@ -146,3 +146,37 @@ class Profile(models.Model):
 
     def __str__(self):
         return f' پروفایل{self.user.phone_number}'
+
+
+class PhoneOTP(models.Model):
+    phone_number = models.CharField(
+        max_length=11,
+        verbose_name='شماره موبایل'
+    )
+
+    code_hash = models.CharField(
+        max_length=128,
+        verbose_name='هش کد تایید'
+    )
+
+    expires_at = models.DateTimeField(
+        verbose_name='زمان انقضا'
+    )
+
+    attempts = models.PositiveSmallIntegerField(
+        default=0,
+        verbose_name='تعداد تلاش'
+    )
+
+    is_used = models.BooleanField(
+        default=False,
+        verbose_name='استفاده شده'
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name='تاریخ ایجاد'
+    )
+
+    def __str__(self):
+        return f'{self.phone_number} - OTP'
