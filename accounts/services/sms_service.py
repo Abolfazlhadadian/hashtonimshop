@@ -7,4 +7,4 @@ def send_otp_sms(phone_number: str, otp: str) -> None:
     )
 
 
-send_otp_sms('09121234567', '483921')
+# send_otp_sms('09121234567', '483921')
