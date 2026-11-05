@@ -75,3 +75,4 @@ def verify_otp(phone_number, code):
     otp_record.is_used = True
     otp_record.save(update_fields=['is_used'])
     return True
+
