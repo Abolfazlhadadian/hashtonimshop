@@ -1,6 +1,6 @@
 from django.urls import path
 
-from .views import RequestOTPView, VerifyOTPView, CurrentUserView
+from .views import RequestOTPView, VerifyOTPView, CurrentUserView, LogOutView
 
 app_name = 'accounts'
 
@@ -20,6 +20,11 @@ urlpatterns = [
         'me/',
         CurrentUserView.as_view(),
         name='current-user'
+    ),
+    path(
+        'logout/',
+        LogOutView.as_view(),
+        name='logout'
     ),
 
 ]

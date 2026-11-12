@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/6.1/ref/settings/
 """
 import os
 from pathlib import Path
-
+from datetime import timedelta
 from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -41,8 +41,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     # Third-party — پکیج‌های خارجی
-    'rest_framework',               # Django REST Framework: تبدیل جنگو به API ساز
-    'rest_framework_simplejwt',     # JWT: سیستم توکن برای احراز هویت
+    'rest_framework',  # Django REST Framework: تبدیل جنگو به API ساز
+    'rest_framework_simplejwt',  # JWT: سیستم توکن برای احراز هویت
+    'rest_framework_simplejwt.token_blacklist',
 
     # Internal — اپ‌های خودمون
     'accounts.apps.AccountsConfig',
@@ -149,7 +150,7 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.SessionAuthentication',
     ),
     'DEFAULT_PERMISSION_CLASSES': (
-        'rest_framework.permissions.AllowAny',
+        'rest_framework.permissions.IsAuthenticated',
     ),
 }
 
@@ -163,13 +164,14 @@ REST_FRAMEWORK = {
 # ROTATE_REFRESH_TOKENS: هر بار رفرش، توکن رفرش جدید هم بده
 # BLACKLIST_AFTER_ROTATION: توکن رفرش قبلی رو باطل کن (امنیت بالاتر)
 
-from datetime import timedelta
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+
     'ROTATE_REFRESH_TOKENS': True,
-    'BLACKLIST_AFTER_ROTATION': False,
+    'BLACKLIST_AFTER_ROTATION': True,
+
     'AUTH_HEADER_TYPES': ('Bearer',),
 }
 
