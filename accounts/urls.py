@@ -1,6 +1,6 @@
 from django.urls import path
 
-from .views import RequestOTPView, VerifyOTPView
+from .views import RequestOTPView, VerifyOTPView, CurrentUserView
 
 app_name = 'accounts'
 
@@ -15,6 +15,11 @@ urlpatterns = [
         'verify-otp/',
         VerifyOTPView.as_view(),
         name='verify-otp'
+    ),
+    path(
+        'me/',
+        CurrentUserView.as_view(),
+        name='current-user'
     ),
 
 ]

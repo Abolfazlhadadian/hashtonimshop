@@ -1,9 +1,11 @@
 from django.contrib.auth import login
 from rest_framework import status
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from accounts.models import User
+from accounts.serializers import CurrentUserSerializer
 from accounts.serializers import RequestOTPSerializer, VerifyOTPSerializer
 from accounts.services.otp_service import request_otp, verify_otp
 
@@ -74,3 +76,11 @@ class VerifyOTPView(APIView):
             },
             status=status.HTTP_200_OK
         )
+
+
+class CurrentUserView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        serializer = CurrentUserSerializer(request.user)
+        return Response(serializer.data)
