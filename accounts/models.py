@@ -1,3 +1,5 @@
+import uuid
+
 from django.conf import settings
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
 from django.core.validators import RegexValidator
@@ -180,3 +182,36 @@ class PhoneOTP(models.Model):
 
     def __str__(self):
         return f'{self.phone_number} - OTP'
+
+
+class AuthSession(models.Model):
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='auth_sessions',
+        verbose_name='کاربر'
+    )
+
+    session_key = models.UUIDField(
+        default=uuid.uuid4,
+        unique=True,
+        editable=False,
+        verbose_name='شناسه نشست'
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name='زمان شروع نشست'
+    )
+
+    expires_at = models.DateTimeField(
+        verbose_name='زمان انقضای نشست'
+    )
+
+    is_active = models.BooleanField(
+        default=True,
+        verbose_name='نشست فعال'
+    )
+
+    def __str__(self):
+        return f'{self.user.phone_number} - {self.session_key}'

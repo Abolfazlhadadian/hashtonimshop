@@ -1,16 +1,22 @@
-from django.contrib.auth import login, logout
+from django.contrib.auth import logout
 from rest_framework import status
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework_simplejwt.tokens import RefreshToken
 
 from accounts.models import User
-from accounts.serializers import CurrentUserSerializer
-from accounts.serializers import RequestOTPSerializer, VerifyOTPSerializer
+from accounts.serializers import (
+    CurrentUserSerializer,
+    RequestOTPSerializer,
+    VerifyOTPSerializer,
+)
 from accounts.services.otp_service import request_otp, verify_otp
 
 
 class RequestOTPView(APIView):
+    permission_classes = [AllowAny]
+
     def post(self, request):
         # 1. دریافت داده‌های درخواست و اعتبارسنجی آن‌ها
         serializer = RequestOTPSerializer(data=request.data)
@@ -30,6 +36,8 @@ class RequestOTPView(APIView):
 
 
 class VerifyOTPView(APIView):
+    permission_classes = [AllowAny]
+
     def post(self, request):
         serializer = VerifyOTPSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -63,16 +71,14 @@ class VerifyOTPView(APIView):
                 },
                 status=status.HTTP_403_FORBIDDEN
             )
-        login(
-            request,
-            user,
-            backend='django.contrib.auth.backends.ModelBackend'
-        )
+        refresh = RefreshToken.for_user(user)
 
         return Response(
-            data={
+            {
                 'detail': 'شماره موبایل با موفقیت تأیید شد.',
                 'is_new_user': created,
+                'access': str(refresh.access_token),
+                'refresh': str(refresh),
             },
             status=status.HTTP_200_OK
         )
